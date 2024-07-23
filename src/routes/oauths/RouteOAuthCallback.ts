@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IRequestSession } from "./IRequestSession";
+import { IRequestSession } from "../IRequestSession";
 import axios from "axios";
 import qs from "query-string";
 
