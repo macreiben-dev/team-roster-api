@@ -1,0 +1,30 @@
+{
+  "name": "team-roaster-back",
+  "version": "1.0.0",
+  "description": "roaster bff",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "npx tsc && node ./dist/index.js",
+    "dev": "npx nodemon --exec npx ts-node ./index.ts",
+    "build": "npx tsc"
+  },
+  "author": "Chris \"MacReiben\" Finel",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "typescript": "^5.5.3"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
+    "@types/query-string": "^6.3.0",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2"
+  }
+}
