@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { IRequestSession } from "../IRequestSession";
+import createServerConfiguration from "../../repositories/ServerConfigurationFactory";
 
 const RouteLogin = (request: Request, response: Response) => {
+  const config = createServerConfiguration();
+
   const stateValue =
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15) +
@@ -14,9 +17,7 @@ const RouteLogin = (request: Request, response: Response) => {
 
   currentSession.stateValue = stateValue;
 
-  response.redirect(
-    `http://${process.env.FUSIONAUTH_SERVERNAME}:${process.env.FUSIONAUTH_PORT}/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code&state=${stateValue}`
-  );
+  response.redirect(config.authorizeUrl(stateValue));
 };
 
 export default RouteLogin;

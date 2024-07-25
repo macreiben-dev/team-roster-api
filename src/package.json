@@ -4,7 +4,7 @@
   "description": "roaster bff",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --config jest.config.ts",
     "start": "npx tsc && node ./dist/index.js",
     "dev": "npx nodemon --exec npx ts-node ./index.ts",
     "build": "npx tsc"

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IRequestSession } from "../internals/IRequestSession";
+import { IRequestSession } from "./IRequestSession";
 
 const configureRoutes = (router: Router): Router => {
   router.get("/login", (request, response) => {

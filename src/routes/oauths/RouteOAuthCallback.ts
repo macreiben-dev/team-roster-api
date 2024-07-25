@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { IRequestSession } from "../IRequestSession";
 import axios from "axios";
-import qs from "query-string";
+import createServerConfiguration from "../../repositories/ServerConfigurationFactory";
+import createTokenRequest from "./CreateTokenRequest";
 
 const config = {
   headers: {
@@ -12,6 +13,8 @@ const config = {
 const HTTPCODE_TEMPORARY_REDIRECT = 302;
 
 const handler = async (request: Request, response: Response) => {
+  const appConfig = createServerConfiguration();
+
   // Here we will receive the code such as:
   // http://localhost:9000/oauth-callback?code=SSXVv3xkNTKEhnY4XzjUVvRZp7eyhgCuuREAgSeByrw&locale=en&userState=Authenticated
 
@@ -30,13 +33,7 @@ const handler = async (request: Request, response: Response) => {
     return;
   }
 
-  const data = {
-    client_id: process.env.CLIENT_ID,
-    client_secret: process.env.CLIENT_SECRET,
-    code: request.query.code,
-    grant_type: "authorization_code",
-    redirect_uri: process.env.REDIRECT_URI,
-  };
+  const data = createTokenRequest(appConfig, request.query.code as string);
 
   //post request to /token endpoint
   axios
@@ -47,10 +44,8 @@ const handler = async (request: Request, response: Response) => {
       // save token to session
       session.token = result.data.access_token;
 
-      //   console.info(result);
-
       //redirect to Vue app ==============================
-      response.redirect(`http://localhost:5173`);
+      response.redirect(appConfig.FrontAppRootUrl());
       // =================================================
     })
     .catch((err) => {
