@@ -1,6 +1,6 @@
 import { IAuthConfiguration } from "../../repositories/IAuthConfiguration";
 
-const createTokenRequest = async (config: IAuthConfiguration, code: string) => {
+const createTokenRequest = (config: IAuthConfiguration, code: string) => {
   const data = {
     client_id: config.ClientId,
     client_secret: config.ClientSecret,
