@@ -1,5 +1,5 @@
 interface IEnvironmentConfiguration {
-  ServerName: string;
+  OAuthServerName: string;
   Port: string;
   ClientId: string;
   ClientSecret: string;

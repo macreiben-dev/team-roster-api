@@ -1,6 +1,6 @@
-import { IAuthConfiguration } from "./IEnvironmentConfiguration";
+import { IEnvironmentConfiguration } from "./IEnvironmentConfiguration";
 
-class EnvironmentConfiguration implements IAuthConfiguration {
+class EnvironmentConfiguration implements IEnvironmentConfiguration {
   private _serverName: string;
   private _port: string;
 
@@ -20,7 +20,7 @@ class EnvironmentConfiguration implements IAuthConfiguration {
     this._frontAppRootUrl = process.env.FRONT_APP_ROOT_URL as string;
   }
 
-  get ServerName(): string {
+  get OAuthServerName(): string {
     return this._serverName;
   }
 

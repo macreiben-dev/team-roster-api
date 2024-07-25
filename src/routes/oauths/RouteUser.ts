@@ -2,13 +2,16 @@ import { Request, Response } from "express";
 import axios from "axios";
 import { IRequestSession } from "../IRequestSession";
 import qs from "qs";
+import { createOAuthConfiguration } from "../../repositories/ServerConfigurationFactory";
 
 const handler = (request: Request, response: Response) => {
+  const config = createOAuthConfiguration();
+
   const session = request.session as IRequestSession;
   if (session.token) {
     axios
       .post(
-        `http://localhost:${process.env.FUSIONAUTH_PORT}/oauth2/introspect`,
+        config.introspecRoute(),
         qs.stringify({
           client_id: process.env.CLIENT_ID,
           token: session.token,

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { IRequestSession } from "../IRequestSession";
 import axios from "axios";
-import createServerConfiguration from "../../repositories/ServerConfigurationFactory";
+import { createEnvironmentConfiguration } from "../../repositories/ServerConfigurationFactory";
 import createTokenRequest from "./CreateTokenRequest";
 
 const config = {
@@ -13,12 +13,7 @@ const config = {
 const HTTPCODE_TEMPORARY_REDIRECT = 302;
 
 const handler = (request: Request, response: Response) => {
-  const appConfig = createServerConfiguration();
-
-  // Here we will receive the code such as:
-  // http://localhost:9000/oauth-callback?code=SSXVv3xkNTKEhnY4XzjUVvRZp7eyhgCuuREAgSeByrw&locale=en&userState=Authenticated
-
-  console.info("oauth-callback called");
+  const appConfig = createEnvironmentConfiguration();
 
   const url = `http://${process.env.FUSIONAUTH_SERVERNAME}:${process.env.FUSIONAUTH_PORT}/oauth2/token`;
 
