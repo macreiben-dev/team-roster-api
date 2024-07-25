@@ -12,7 +12,7 @@ const config = {
 
 const HTTPCODE_TEMPORARY_REDIRECT = 302;
 
-const handler = async (request: Request, response: Response) => {
+const handler = (request: Request, response: Response) => {
   const appConfig = createServerConfiguration();
 
   // Here we will receive the code such as:
