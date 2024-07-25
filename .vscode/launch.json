@@ -12,14 +12,15 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run-script", "start"]
         },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "TS Launch Backend in debug",
-            "cwd": "${workspaceFolder}/src",
-            "program": "./index.ts",
-            "preLaunchTask": "npm: build - src",
-            "outFiles": ["./dist/index.js"]
-        }
+        
+            {
+                "type": "node",
+                "request": "launch",
+                "name": "Launch Program",
+                "program": "${workspaceFolder}/src/index.ts",
+                "preLaunchTask": "tsc: build - tsconfig.json",
+                "outFiles": ["${workspaceFolder}/src/dist/**/*.js"]
+              }
+          
     ]
 }

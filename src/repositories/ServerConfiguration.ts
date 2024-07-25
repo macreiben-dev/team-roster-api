@@ -20,7 +20,7 @@ class OAuthConfiguration implements IAuthConfiguration {
     this._frontAppRootUrl = process.env.FRONT_APP_ROOT_URL as string;
   }
 
-  get ServerName() {
+  get ServerName(): string {
     return this._serverName;
   }
 
@@ -49,7 +49,7 @@ class OAuthConfiguration implements IAuthConfiguration {
   }
 
   logoutUrl(): string {
-    return `http://${this.ServerName}:${this.Port}/oauth2/logout?client_id=${this.ClientId}`;
+    return `http://${this._serverName}:${this._port}/oauth2/logout?client_id=${this._clientId}`;
   }
   authorizeUrl(stateValue: string): string {
     return `http://${process.env.FUSIONAUTH_SERVERNAME}:${process.env.FUSIONAUTH_PORT}/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code&state=${stateValue}`;

@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import configureRoute from "./routes";
-import configureSystemRoute from "./routes/configureSystemRoute";
+import "source-map-support/register";
 
 import session from "express-session";
 

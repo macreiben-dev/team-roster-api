@@ -26,7 +26,7 @@ describe("OAuthConfiguration", () => {
     test("should return the fusion auth server name", () => {
       process.env.FUSIONAUTH_SERVERNAME = "fusionauth_server";
       const oauthConfiguration = new OAuthConfiguration();
-      expect(oauthConfiguration.OAuthServerName).toBe("fusionauth_server");
+      expect(oauthConfiguration.ServerName).toBe("fusionauth_server");
     });
 
     test("should return the fusion auth port", () => {

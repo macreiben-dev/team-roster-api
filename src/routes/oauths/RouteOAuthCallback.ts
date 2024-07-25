@@ -45,7 +45,7 @@ const handler = async (request: Request, response: Response) => {
       session.token = result.data.access_token;
 
       //redirect to Vue app ==============================
-      response.redirect(appConfig.FrontAppRootUrl());
+      response.redirect(appConfig.FrontAppRootUrl);
       // =================================================
     })
     .catch((err) => {
