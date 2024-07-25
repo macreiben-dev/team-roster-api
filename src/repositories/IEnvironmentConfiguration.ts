@@ -1,4 +1,4 @@
-interface IAuthConfiguration {
+interface IEnvironmentConfiguration {
   ServerName: string;
   Port: string;
   ClientId: string;
@@ -10,4 +10,4 @@ interface IAuthConfiguration {
   authorizeUrl(stateValue: string): string;
 }
 
-export { IAuthConfiguration };
+export { IEnvironmentConfiguration };

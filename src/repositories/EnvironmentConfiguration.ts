@@ -1,6 +1,6 @@
-import { IAuthConfiguration } from "./IAuthConfiguration";
+import { IAuthConfiguration } from "./IEnvironmentConfiguration";
 
-class OAuthConfiguration implements IAuthConfiguration {
+class EnvironmentConfiguration implements IAuthConfiguration {
   private _serverName: string;
   private _port: string;
 
@@ -56,4 +56,4 @@ class OAuthConfiguration implements IAuthConfiguration {
   }
 }
 
-export { OAuthConfiguration };
+export { EnvironmentConfiguration };

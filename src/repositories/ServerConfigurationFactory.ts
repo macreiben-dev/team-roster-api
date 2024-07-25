@@ -1,8 +1,8 @@
-import { IAuthConfiguration } from "./IAuthConfiguration";
-import { OAuthConfiguration } from "./ServerConfiguration";
+import { IEnvironmentConfiguration } from "./IEnvironmentConfiguration";
+import { EnvironmentConfiguration } from "./EnvironmentConfiguration";
 
-const createServerConfiguration = (): IAuthConfiguration => {
-  return new OAuthConfiguration();
+const createEnvironmentConfiguration = (): IEnvironmentConfiguration => {
+  return new EnvironmentConfiguration();
 };
 
-export default createServerConfiguration;
+export default createEnvironmentConfiguration;

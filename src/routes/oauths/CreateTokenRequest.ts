@@ -1,4 +1,4 @@
-import { IAuthConfiguration } from "../../repositories/IAuthConfiguration";
+import { IAuthConfiguration } from "../../repositories/IEnvironmentConfiguration";
 
 const createTokenRequest = (config: IAuthConfiguration, code: string) => {
   const data = {

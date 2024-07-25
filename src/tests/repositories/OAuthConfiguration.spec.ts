@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from "@jest/globals";
-import { OAuthConfiguration } from "../../repositories/ServerConfiguration";
+import { OAuthConfiguration } from "../../repositories/EnvironmentConfiguration";
 
 describe("OAuthConfiguration", () => {
   const INITAL_ENV = process.env;
