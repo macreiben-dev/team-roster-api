@@ -23,24 +23,21 @@ const handler = (request: Request, response: Response) => {
         if (introspectResponse) {
           // GET request to /registration endpoint
           axios
-            .get(
-              `http://localhost:${process.env.FUSIONAUTH_PORT}/api/user/registration/${introspectResponse.sub}/${process.env.APPLICATION_ID}`,
-              {
-                headers: {
-                  Authorization: process.env.API_KEY,
-                },
-              }
-            )
-            .then((response) => {
+            .get(config.registrationRoute(introspectResponse.sub), {
+              headers: {
+                Authorization: process.env.API_KEY,
+              },
+            })
+            .then((axiosResponse) => {
               response.send({
                 introspectResponse: introspectResponse,
-                body: response.data.registration,
+                body: axiosResponse.data.registration,
               });
             });
         }
         // expired token -> send nothing
         else {
-          session.destroy();
+          request.session.destroy(() => {});
           response.send({});
         }
       })
@@ -53,3 +50,5 @@ const handler = (request: Request, response: Response) => {
     response.send({});
   }
 };
+
+export default handler;
