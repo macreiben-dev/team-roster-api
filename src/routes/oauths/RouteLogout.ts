@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import createServerConfiguration from "../../repositories/ServerConfigurationFactory";
+import { createOAuthConfiguration } from "../../repositories/ServerConfigurationFactory";
 
 const handler = async (request: Request, response: Response) => {
-  const config = createServerConfiguration();
+  const config = createOAuthConfiguration();
 
   // delete the session
   request.session.destroy(() => {
@@ -12,3 +12,5 @@ const handler = async (request: Request, response: Response) => {
   // end FusionAuth session
   response.redirect(config.logoutUrl());
 };
+
+export default handler;

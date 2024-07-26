@@ -30,6 +30,7 @@ const handler = (request: Request, response: Response) => {
             })
             .then((axiosResponse) => {
               response.send({
+                // Idea: do not used introspect since a concept from OAuth2
                 introspectResponse: introspectResponse,
                 body: axiosResponse.data.registration,
               });
