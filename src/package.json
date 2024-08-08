@@ -7,7 +7,8 @@
     "test": "jest --config jest.config.ts",
     "start": "npx tsc && node ./dist/index.js",
     "dev": "npx nodemon --exec npx ts-node ./index.ts",
-    "build": "npx tsc --project tsconfig.json"
+    "build": "npx tsc --project tsconfig.json",
+    "build:prod": "npx tsc --project tsconfig.production.json"
   },
   "author": "Chris \"MacReiben\" Finel",
   "license": "ISC",
