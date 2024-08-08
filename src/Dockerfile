@@ -19,7 +19,7 @@ RUN npm install
 
 RUN npm run build:prod
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Run the application as a non-root user.
 USER node
@@ -28,4 +28,4 @@ USER node
 EXPOSE 9000
 
 # Run the application.
-CMD npm start
+CMD ["npm",  "start" ]

@@ -15,7 +15,9 @@ const HTTPCODE_TEMPORARY_REDIRECT = 302;
 const handler = (request: Request, response: Response) => {
   const appConfig = createEnvironmentConfiguration();
 
-  const url = `http://${process.env.FUSIONAUTH_SERVERNAME}:${process.env.FUSIONAUTH_PORT}/oauth2/token`;
+  console.info("retrieving token ...");
+
+  const url = `http://${process.env.FUSIONAUTH_SERVERNAME_FOR_TOKEN}:${process.env.FUSIONAUTH_PORT}/oauth2/token`;
 
   const stateFromServer = readQueryState(request);
 
@@ -30,6 +32,8 @@ const handler = (request: Request, response: Response) => {
 
   const data = createTokenRequest(appConfig, request.query.code as string);
 
+  console.info("contacting token endpoint [url], [data]", url, data);
+
   //post request to /token endpoint
   axios
     .post(url, data, config)
@@ -39,11 +43,15 @@ const handler = (request: Request, response: Response) => {
       // save token to session
       session.token = result.data.access_token;
 
+      console.info("token retrieved successfully");
+
       //redirect to Vue app ==============================
       response.redirect(appConfig.FrontAppRootUrl);
       // =================================================
     })
     .catch((err) => {
+      console.error("====================================");
+      console.error("error retrieving token");
       console.error(err);
     });
 };

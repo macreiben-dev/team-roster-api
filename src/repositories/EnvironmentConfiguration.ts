@@ -11,6 +11,9 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
   private _frontAppRootUrl: string;
 
   constructor() {
+    /**
+     * Add the alias to query internal docker network for introspection on oauth server.
+     */
     this._serverName = process.env.FUSIONAUTH_SERVERNAME as string;
     this._port = process.env.FUSIONAUTH_PORT as string;
     this._clientId = process.env.CLIENT_ID as string;
