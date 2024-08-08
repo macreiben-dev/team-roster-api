@@ -34,7 +34,7 @@ app
   .listen(PORT, () => {
     console.info("Server running at PORT: ", PORT);
   })
-  .on("error", (error) => {
+  .on("error", (error: any) => {
     // gracefully handle error
     throw new Error(error.message);
   });
