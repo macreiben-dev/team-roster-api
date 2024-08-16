@@ -1,13 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import configureRoute from "./routes";
-// import "source-map-support/register";
-
 import session from "express-session";
 
 const cors = require("cors");
 
 dotenv.config();
+
 const app = express();
 app.use(cors());
 
