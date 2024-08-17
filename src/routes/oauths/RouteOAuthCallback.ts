@@ -6,8 +6,7 @@ import {
   createOAuthConfiguration,
 } from "../../repositories/ServerConfigurationFactory";
 import HttpStatusCodes from "../../repositories/HttpStatusCodeConfiguration";
-
-import createTokenRequest from "./CreateTokenRequest";
+import createTokenRequestData from "./CreateTokenRequest";
 
 const config = {
   headers: {
@@ -16,28 +15,25 @@ const config = {
 };
 
 const handler = (request: Request, response: Response) => {
-  const appConfig = createEnvironmentConfiguration();
-
-  const oAuthConfiguration = createOAuthConfiguration();
-
   console.info("retrieving token ...");
 
   const stateFromServer = readQueryState(request);
 
-  const sessionStateValue = readSessionState(request);
+  const currentSessionStateValue = readSessionState(request);
 
-  if (stateFromServer !== sessionStateValue) {
-    redirectAndWarn(stateFromServer, sessionStateValue, response);
+  if (stateFromServer !== currentSessionStateValue) {
+    redirectAndWarn(stateFromServer, currentSessionStateValue, response);
     return;
   }
 
-  const data = createTokenRequest(appConfig, request.query.code as string);
+  const appConfig = createEnvironmentConfiguration();
 
-  const url = oAuthConfiguration.tokenRoute();
+  const data = createTokenRequestData(appConfig, request.query.code as string);
+
+  const url = createTokenUrl();
 
   console.info("contacting token endpoint [url], [data] -", url, data);
 
-  //post request to /token endpoint
   axios
     .post(url, data, config)
     .then((result) => {
@@ -46,7 +42,9 @@ const handler = (request: Request, response: Response) => {
       // save token to session
       session.token = result.data.access_token;
 
-      console.info("token retrieved successfully");
+      console.info("token retrieved successfully, redirecting to [vueApp] -", {
+        vueApp: appConfig.FrontAppRootUrl,
+      });
 
       //redirect to Vue app ==============================
 
@@ -63,6 +61,14 @@ const handler = (request: Request, response: Response) => {
       console.error("error retrieving token");
       console.error(err);
     });
+};
+
+const createTokenUrl = () => {
+  const oAuthConfiguration = createOAuthConfiguration();
+
+  const url = oAuthConfiguration.tokenRoute();
+
+  return url;
 };
 
 const readQueryState = (request: Request): string =>
