@@ -7,6 +7,7 @@ import {
 } from "../../repositories/ServerConfigurationFactory";
 import HttpStatusCodes from "../../repositories/HttpStatusCodeConfiguration";
 import createTokenRequestData from "./CreateTokenRequest";
+import { IEnvironmentConfiguration } from "../../repositories/IEnvironmentConfiguration";
 
 const config = {
   headers: {
@@ -26,16 +27,19 @@ const handler = (request: Request, response: Response) => {
     return;
   }
 
-  const appConfig = createEnvironmentConfiguration();
+  const environment = createEnvironmentConfiguration();
 
-  const data = createTokenRequestData(appConfig, request.query.code as string);
-
-  const url = createTokenUrl();
-
-  console.info("contacting token endpoint [url], [data] -", url, data);
+  const tokenRetrievalContext = createTokenRetrievalContext(
+    environment,
+    request.query.code as string
+  );
 
   axios
-    .post(url, data, config)
+    .post(
+      tokenRetrievalContext.url,
+      tokenRetrievalContext.data,
+      tokenRetrievalContext.config
+    )
     .then((result) => {
       const session = request.session as IRequestSession;
 
@@ -43,7 +47,7 @@ const handler = (request: Request, response: Response) => {
       session.token = result.data.access_token;
 
       console.info("token retrieved successfully, redirecting to [vueApp] -", {
-        vueApp: appConfig.FrontAppRootUrl,
+        vueApp: environment.FrontAppRootUrl,
       });
 
       //redirect to Vue app ==============================
@@ -52,7 +56,7 @@ const handler = (request: Request, response: Response) => {
        * idea: the token should be returned to the vue app
        * and the vue app should store it somewhere.
        */
-      response.redirect(appConfig.FrontAppRootUrl);
+      response.redirect(environment.FrontAppRootUrl);
 
       // =================================================
     })
@@ -62,6 +66,21 @@ const handler = (request: Request, response: Response) => {
       console.error(err);
     });
 };
+
+function createTokenRetrievalContext(
+  envConfiguration: IEnvironmentConfiguration,
+  requestQueryCode: string
+) {
+  const data = createTokenRequestData(envConfiguration, requestQueryCode);
+
+  const url = createTokenUrl();
+
+  const context = { url, data, config };
+
+  console.info("token retrieval context [url], [data], [config]", context);
+
+  return context;
+}
 
 const createTokenUrl = () => {
   const oAuthConfiguration = createOAuthConfiguration();
