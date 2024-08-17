@@ -6,8 +6,6 @@ interface IEnvironmentConfiguration {
   RedirectUri: string;
   ApplicationId: string;
   FrontAppRootUrl: string;
-  logoutUrl(): string;
-  authorizeUrl(stateValue: string): string;
 }
 
 export { IEnvironmentConfiguration };

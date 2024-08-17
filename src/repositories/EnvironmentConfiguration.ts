@@ -11,9 +11,6 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
   private _frontAppRootUrl: string;
 
   constructor() {
-    /**
-     * Add the alias to query internal docker network for introspection on oauth server.
-     */
     this._serverName = process.env.FUSIONAUTH_SERVERNAME as string;
     this._port = process.env.FUSIONAUTH_PORT as string;
     this._clientId = process.env.CLIENT_ID as string;
@@ -49,13 +46,6 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
 
   get FrontAppRootUrl(): string {
     return this._frontAppRootUrl;
-  }
-
-  logoutUrl(): string {
-    return `http://${this._serverName}:${this._port}/oauth2/logout?client_id=${this._clientId}`;
-  }
-  authorizeUrl(stateValue: string): string {
-    return `http://${process.env.FUSIONAUTH_SERVERNAME}:${process.env.FUSIONAUTH_PORT}/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code&state=${stateValue}`;
   }
 }
 
