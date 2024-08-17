@@ -1,6 +1,6 @@
 import { IEnvironmentConfiguration } from "../../repositories/IEnvironmentConfiguration";
 
-const createTokenRequest = (
+const createTokenRequestData = (
   config: IEnvironmentConfiguration,
   code: string
 ) => {
@@ -15,4 +15,4 @@ const createTokenRequest = (
   return data;
 };
 
-export default createTokenRequest;
+export default createTokenRequestData;
