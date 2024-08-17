@@ -4,7 +4,7 @@ import RouteOAuthCallback from "./oauths/RouteOAuthCallback";
 import RouteLogin from "./oauths/RouteLogin";
 
 const configureRoutes = (router: Router): Router => {
-  router.get("/login", (request, response) => {
+  router.get("/login", (request: any, response: any) => {
     RouteLogin(request, response);
   });
 

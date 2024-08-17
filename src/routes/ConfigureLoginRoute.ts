@@ -2,7 +2,7 @@ import { Router } from "express";
 import { IRequestSession } from "./IRequestSession";
 
 const configureRoutes = (router: Router): Router => {
-  router.get("/login", (request, response) => {
+  router.get("/login", (request: any, response: any) => {
     const stateValue =
       Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15) +

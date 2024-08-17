@@ -3,5 +3,6 @@ interface IOAuthRoutesConfiguration {
   authorizeUrl(stateValue: string): string;
   introspecRoute(): string;
   registrationRoute(sub: string): string;
+  tokenRoute(): string;
 }
 export default IOAuthRoutesConfiguration;

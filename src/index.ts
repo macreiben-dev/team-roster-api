@@ -1,13 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import configureRoute from "./routes";
-import "source-map-support/register";
-
 import session from "express-session";
 
 const cors = require("cors");
 
 dotenv.config();
+
 const app = express();
 app.use(cors());
 
@@ -34,7 +33,7 @@ app
   .listen(PORT, () => {
     console.info("Server running at PORT: ", PORT);
   })
-  .on("error", (error) => {
+  .on("error", (error: any) => {
     // gracefully handle error
     throw new Error(error.message);
   });
