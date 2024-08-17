@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import { IRequestSession } from "../IRequestSession";
 import axios from "axios";
-import { createEnvironmentConfiguration } from "../../repositories/ServerConfigurationFactory";
+import {
+  createEnvironmentConfiguration,
+  createOAuthConfiguration,
+} from "../../repositories/ServerConfigurationFactory";
+import HttpStatusCodes from "../../repositories/HttpStatusCodeConfiguration";
+
 import createTokenRequest from "./CreateTokenRequest";
 
 const config = {
@@ -10,29 +15,27 @@ const config = {
   },
 };
 
-const HTTPCODE_TEMPORARY_REDIRECT = 302;
-
 const handler = (request: Request, response: Response) => {
   const appConfig = createEnvironmentConfiguration();
 
-  console.info("retrieving token ...");
+  const oAuthConfiguration = createOAuthConfiguration();
 
-  const url = `http://${process.env.FUSIONAUTH_SERVERNAME_FOR_TOKEN}:${process.env.FUSIONAUTH_PORT}/oauth2/token`;
+  console.info("retrieving token ...");
 
   const stateFromServer = readQueryState(request);
 
   const sessionStateValue = readSessionState(request);
 
   if (stateFromServer !== sessionStateValue) {
-    console.warn("State doesn't match. uh-oh.");
-    console.warn(`Saw: ${stateFromServer}, but expected: ${sessionStateValue}`);
-    response.redirect(HTTPCODE_TEMPORARY_REDIRECT, "/");
+    redirectAndWarn(stateFromServer, sessionStateValue, response);
     return;
   }
 
   const data = createTokenRequest(appConfig, request.query.code as string);
 
-  console.info("contacting token endpoint [url], [data]", url, data);
+  const url = oAuthConfiguration.tokenRoute();
+
+  console.info("contacting token endpoint [url], [data] -", url, data);
 
   //post request to /token endpoint
   axios
@@ -63,6 +66,16 @@ const readSessionState = (request: Request): string => {
   const session = request.session as IRequestSession;
   const sessionStateValue = session.stateValue;
   return sessionStateValue as string;
+};
+
+const redirectAndWarn = (
+  stateFromServer: string,
+  sessionStateValue: string,
+  response: Response<any, Record<string, any>>
+) => {
+  console.warn("State doesn't match. uh-oh.");
+  console.warn(`Saw: ${stateFromServer}, but expected: ${sessionStateValue}`);
+  response.redirect(HttpStatusCodes.TEMPORARY_REDIRECT, "/");
 };
 
 export default handler;

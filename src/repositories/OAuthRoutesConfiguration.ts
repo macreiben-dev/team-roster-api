@@ -34,6 +34,10 @@ class OAuthRoutesConfiguration implements IOAuthRoutesConfiguration {
       this._environmentConfig.ApplicationId
     }`;
   }
+
+  tokenRoute(): string {
+    return `http://${this.serverName()}/oauth2/token`;
+  }
 }
 
 export default OAuthRoutesConfiguration;
