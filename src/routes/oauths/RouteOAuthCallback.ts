@@ -49,7 +49,13 @@ const handler = (request: Request, response: Response) => {
       console.info("token retrieved successfully");
 
       //redirect to Vue app ==============================
+
+      /**
+       * idea: the token should be returned to the vue app
+       * and the vue app should store it somewhere.
+       */
       response.redirect(appConfig.FrontAppRootUrl);
+
       // =================================================
     })
     .catch((err) => {
