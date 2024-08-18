@@ -11,3 +11,5 @@ The team roster API with fusion auth integration for authentication.
 
 - https://fusionauth.io/docs/quickstarts/quickstart-javascript-express-api#authentication
 - https://fusionauth.io/docs/lifecycle/authenticate-users/oauth/#example-authorization-code-grant
+
+### Integrating custom types in node with typescript
