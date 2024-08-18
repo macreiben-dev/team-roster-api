@@ -6,6 +6,7 @@ interface IEnvironmentConfiguration {
   RedirectUri: string;
   ApplicationId: string;
   FrontAppRootUrl: string;
+  baseUrl: string;
 }
 
 export { IEnvironmentConfiguration };
