@@ -1,10 +1,17 @@
+import { readToken } from "../lib/tokenUtil";
+
 import { Request, Response, NextFunction } from "express";
-import jose from "jose";
+
 import {
   createEnvironmentConfiguration,
   createOAuthConfiguration,
 } from "../repositories/ServerConfigurationFactory";
 import { IEnvironmentConfiguration } from "../repositories/IEnvironmentConfiguration";
+
+// import { JOSEError } from "jose/dist/types/util/errors";
+// import jose from "jose";
+const jose = require("jose");
+
 const logContext = { middleware: "verifyJWT" };
 
 const ROUTE_LOGIN = "/login";
@@ -50,32 +57,55 @@ const verifyJWT = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    verifyToken(currentToken, config);
+    await verifyToken(currentToken, config);
 
     req.verifiedToken = currentToken;
 
     next();
   } catch (e) {
-    if (e instanceof jose.errors.JOSEError) {
-      send401AndAddError(res, e);
-      return;
-    }
+    // if (e instanceof JOSEError) {
+    //   send401AndAddError(res, e);
+    //   return;
+    // }
     send500AndError(e, res, logContext);
   }
 };
 const jwksClient = (): any => {
-  const disocveryRoute = createOAuthConfiguration().jwksDiscorveryRoute();
-  return jose.createRemoteJWKSet(new URL(disocveryRoute));
+  const discoveryRoute = createOAuthConfiguration().jwksDiscorveryRoute();
+  const currentLogContext = {
+    ...logContext,
+    function: "jwksClient",
+    discoveryRoute,
+  };
+
+  try {
+    const discoveryURL = new URL(discoveryRoute);
+    const remoteJWKSet = jose.createRemoteJWKSet(discoveryURL);
+
+    console.info("Created remote JWK set", currentLogContext);
+
+    return remoteJWKSet;
+  } catch (e) {
+    throw e;
+  }
 };
 
 const verifyToken = async (
   access_token: string,
   environmentConfiguration: IEnvironmentConfiguration
 ) => {
-  const _ = await jose.jwtVerify(access_token, jwksClient(), {
-    issuer: environmentConfiguration.baseUrl,
+  const configuration = {
+    issuer: environmentConfiguration.issuerUrl,
     audience: environmentConfiguration.ClientId,
-  });
+  };
+
+  const jwksClientInstance = jwksClient();
+
+  const _ = await jose.jwtVerify(
+    access_token,
+    jwksClientInstance,
+    configuration
+  );
 };
 function send500AndError(
   e: unknown,
@@ -91,10 +121,7 @@ function send500AndError(
   res.send(contextPayload);
 }
 
-function send401AndAddError(
-  res: Response<any, Record<string, any>>,
-  e: jose.errors.JOSEError
-) {
+function send401AndAddError(res: Response<any, Record<string, any>>, e: any) {
   res.status(401);
   res.send({ error: e.message, code: e.code });
 }
@@ -108,18 +135,6 @@ function send401AndMessage(
   console.info(message, contextPayload);
   res.status(401);
   res.send(contextPayload);
-}
-
-function readToken(req: Request) {
-  const authHeader = req.headers.authorization;
-
-  const tokenFromHeader = authHeader ? authHeader.split(" ")[1] : null;
-
-  const cookieAuthorizationToken = req.cookies ? req.cookies["app.at"] : null;
-
-  const currentToken = cookieAuthorizationToken || tokenFromHeader;
-
-  return currentToken;
 }
 
 export default verifyJWT;

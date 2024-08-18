@@ -5,5 +5,6 @@ interface IOAuthRoutesConfiguration {
   registrationRoute(sub: string): string;
   tokenRoute(): string;
   jwksDiscorveryRoute(): string;
+  apiUserRoute(id: string): string;
 }
 export default IOAuthRoutesConfiguration;

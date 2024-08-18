@@ -9,7 +9,9 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
   private _redirectUri: string;
   private _applicationId: string;
   private _frontAppRootUrl: string;
-  private _baseUrl: string;
+  private _issuerUrl: string;
+  private _tenantId: string;
+  private _apiKey: string;
 
   constructor() {
     this._serverName = process.env.FUSIONAUTH_SERVERNAME as string;
@@ -19,7 +21,9 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
     this._redirectUri = process.env.REDIRECT_URI as string;
     this._applicationId = process.env.APPLICATION_ID as string;
     this._frontAppRootUrl = process.env.FRONT_APP_ROOT_URL as string;
-    this._baseUrl = process.env.BASE_URL as string;
+    this._issuerUrl = process.env.ISSUER_URL as string;
+    this._tenantId = process.env.TENANT_ID as string;
+    this._apiKey = process.env.API_KEY as string;
   }
 
   get OAuthServerName(): string {
@@ -50,8 +54,16 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
     return this._frontAppRootUrl;
   }
 
-  get baseUrl(): string {
-    return this._baseUrl;
+  get issuerUrl(): string {
+    return this._issuerUrl;
+  }
+
+  get tenantId(): string {
+    return this._tenantId;
+  }
+
+  get apiKey(): string {
+    return this._apiKey;
   }
 }
 

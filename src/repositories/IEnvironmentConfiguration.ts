@@ -6,7 +6,9 @@ interface IEnvironmentConfiguration {
   RedirectUri: string;
   ApplicationId: string;
   FrontAppRootUrl: string;
-  baseUrl: string;
+  issuerUrl: string;
+  tenantId: string;
+  apiKey: string;
 }
 
 export { IEnvironmentConfiguration };
