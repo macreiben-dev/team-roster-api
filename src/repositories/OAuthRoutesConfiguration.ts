@@ -38,6 +38,10 @@ class OAuthRoutesConfiguration implements IOAuthRoutesConfiguration {
   tokenRoute(): string {
     return `http://${this.serverName()}/oauth2/token`;
   }
+
+  jwksDiscorveryRoute(): string {
+    return `http://${this.serverName()}/.well-known/jwks.json`;
+  }
 }
 
 export default OAuthRoutesConfiguration;

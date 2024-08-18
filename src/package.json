@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --config jest.config.ts",
     "start": "node ./dist/index.js",
-    "start:dev": "npx nodemon --exec npx ts-node ./index.ts",
+    "start:dev": "npx nodemon --exec npx ts-node --project ./tsconfig.json ./index.ts",
     "build:dev": "npx tsc --project tsconfig.json",
     "build:prod": "npx tsc --project tsconfig.production.json"
   },
@@ -18,6 +18,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "jose": "^5.6.3",
     "typescript": "^5.5.3"
   },
   "devDependencies": {
