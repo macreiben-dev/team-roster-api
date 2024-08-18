@@ -29,15 +29,32 @@ const handler = async (request: Request, response: Response) => {
     send401(response);
   }
 
-  const userId = await readUserIdFromIntroSpec(envConfig, config, currentToken);
+  try {
+    const userId = await readUserIdFromIntroSpec(
+      envConfig,
+      config,
+      currentToken
+    );
 
-  const userApiResponse = await readUserFromApi(envConfig, config, userId);
+    const userApiResponse = await readUserFromApi(envConfig, config, userId);
 
-  const user = new ConnectedUser(userApiResponse.data);
+    const user = new ConnectedUser(userApiResponse.data);
 
-  console.info("connected user created [user]", user.toJson(), userApiResponse);
+    console.info(
+      "connected user created [user]",
+      user.toJson(),
+      userApiResponse
+    );
 
-  response.status(200).send(user.toJson());
+    response.status(200).send(user.toJson());
+  } catch (error) {
+    console.error(
+      "Unable to read connected user details",
+      error,
+      currentLogContext
+    );
+    send500(response, error);
+  }
 };
 
 async function readUserFromApi(
@@ -113,6 +130,10 @@ async function readUserIdFromIntroSpec(
 
 function send401(response: Response<any, Record<string, any>>) {
   response.status(401).send("Unauthorized");
+}
+
+function send500(response: Response<any, Record<string, any>>, error: any) {
+  response.status(500).send(error.message);
 }
 
 class IntrospecResponseNullError extends Error {
