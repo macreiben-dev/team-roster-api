@@ -13,3 +13,5 @@ The team roster API with fusion auth integration for authentication.
 - https://fusionauth.io/docs/lifecycle/authenticate-users/oauth/#example-authorization-code-grant
 
 ### Integrating custom types in node with typescript
+
+- https://dev.to/kwabenberko/extend-express-s-request-object-with-typescript-declaration-merging-1nn5
