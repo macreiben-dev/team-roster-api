@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-
+        working-directory: ./src
     - run: npm ci
       working-directory: ./src
     - run: npm run build:prod --if-present
