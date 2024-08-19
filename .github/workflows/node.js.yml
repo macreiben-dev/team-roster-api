@@ -26,6 +26,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
+    - run: ls 
     - run: npm ci
     - run: npm run build:prod --if-present
     # - run: npm test NO TESTS YET
