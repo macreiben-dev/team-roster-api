@@ -13,9 +13,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -28,7 +25,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-      working-directory: ./src
+      working-directory: src
     - run: npm run build:prod --if-present
-      working-directory: ./src
+      working-directory: src
     # - run: npm test NO TESTS YET
