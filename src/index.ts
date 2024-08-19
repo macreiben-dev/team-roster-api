@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import configureRoute from "./routes";
 import session from "express-session";
+import verifyJWT from "./middlewares/verifyJWT";
 
 const cors = require("cors");
 
@@ -24,6 +25,8 @@ app.use(
     },
   })
 );
+
+app.use(verifyJWT);
 
 app.use("/", configureRoute);
 

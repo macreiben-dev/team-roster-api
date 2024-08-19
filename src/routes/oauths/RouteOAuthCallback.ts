@@ -12,6 +12,8 @@ import { v7 as createUid } from "uuid";
 
 const logContext = { route: "oauth-callback" };
 
+const logContext = { route: "oauth-callback" };
+
 const config = {
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -66,13 +68,12 @@ const handler = (request: Request, response: Response) => {
       tokenRetrievalContext.config
     )
     .then((result) => {
-      const session = request.session as IRequestSession;
 
       const currentToken = result.data.access_token;
+      
+      const session = request.session as IRequestSession;
 
       // save token to session
-      session.token = result.data.access_token;
-
       session.token = currentToken;
 
       const logContextRetrieval = {

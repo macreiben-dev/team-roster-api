@@ -1,25 +1,23 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "npm",
-			"script": "build",
-			"path": "src",
-			"group": "build",
-			"problemMatcher": [],
-			"label": "tsc: build - tsconfig.json",
-			"detail": "npx tsc --project tsconfig.json"
-		},
-		{
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "problemMatcher": [
-                "$tsc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        }
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "build:dev",
+      "path": "src",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "tsc: build - tsconfig.json",
+      "detail": "npx tsc --project tsconfig.json"
+    },
+    {
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "problemMatcher": ["$tsc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
 }
