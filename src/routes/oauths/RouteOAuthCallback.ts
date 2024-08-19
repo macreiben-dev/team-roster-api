@@ -8,6 +8,9 @@ import {
 import HttpStatusCodes from "../../repositories/HttpStatusCodeConfiguration";
 import createTokenRequestData from "./CreateTokenRequest";
 import { IEnvironmentConfiguration } from "../../repositories/IEnvironmentConfiguration";
+import { v7 as createUid } from "uuid";
+
+const logContext = { route: "oauth-callback" };
 
 const logContext = { route: "oauth-callback" };
 
@@ -18,7 +21,13 @@ const config = {
 };
 
 const handler = (request: Request, response: Response) => {
-  console.info("retrieving token ...");
+  const currentLogContext = {
+    ...logContext,
+    correlationId: createUid(),
+    originalUrl: request.originalUrl,
+  };
+
+  console.info("retrieving token ...", currentLogContext);
 
   const stateFromServer = readQueryState(request);
 
@@ -42,6 +51,16 @@ const handler = (request: Request, response: Response) => {
     logContext
   );
 
+  const logTokenRetrievalContext = {
+    ...currentLogContext,
+    url: tokenRetrievalContext.url,
+    client_id: tokenRetrievalContext.data.client_id,
+    redirect_uri: tokenRetrievalContext.data.redirect_uri,
+    config,
+  };
+
+  console.info("queyring token", logTokenRetrievalContext);
+
   axios
     .post(
       tokenRetrievalContext.url,
@@ -49,15 +68,16 @@ const handler = (request: Request, response: Response) => {
       tokenRetrievalContext.config
     )
     .then((result) => {
-      const session = request.session as IRequestSession;
 
       const currentToken = result.data.access_token;
+      
+      const session = request.session as IRequestSession;
 
       // save token to session
       session.token = currentToken;
 
       const logContextRetrieval = {
-        ...logContext,
+        ...logTokenRetrievalContext,
         token: result.data.access_token,
         vueApp: environment.FrontAppRootUrl,
       };
@@ -79,9 +99,7 @@ const handler = (request: Request, response: Response) => {
       // =================================================
     })
     .catch((err) => {
-      console.error("====================================");
-      console.error("error retrieving token");
-      console.error(err);
+      console.error("error retrieving token", err, logTokenRetrievalContext);
     });
 };
 

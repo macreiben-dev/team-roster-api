@@ -12,9 +12,12 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
   private _issuerUrl: string;
   private _tenantId: string;
   private _apiKey: string;
+  private _internalServerName: string;
 
   constructor() {
     this._serverName = process.env.FUSIONAUTH_SERVERNAME as string;
+    this._internalServerName = process.env
+      .FUSIONAUTH_SERVERNAME_FOR_TOKEN as string;
     this._port = process.env.FUSIONAUTH_PORT as string;
     this._clientId = process.env.CLIENT_ID as string;
     this._clientSecret = process.env.CLIENT_SECRET as string;
@@ -28,6 +31,10 @@ class EnvironmentConfiguration implements IEnvironmentConfiguration {
 
   get OAuthServerName(): string {
     return this._serverName;
+  }
+
+  get OAuthInternalServerName(): string {
+    return this._internalServerName;
   }
 
   get Port(): string {
