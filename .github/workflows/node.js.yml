@@ -27,7 +27,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
-      working-directory: src
     - run: npm run build:prod --if-present
-      working-directory: src
     # - run: npm test NO TESTS YET
