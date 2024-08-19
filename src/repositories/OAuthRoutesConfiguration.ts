@@ -11,6 +11,10 @@ class OAuthRoutesConfiguration implements IOAuthRoutesConfiguration {
     return `${this._environmentConfig.OAuthServerName}:${this._environmentConfig.Port}`;
   }
 
+  private internalServerName(): string {
+    return `${this._environmentConfig.OAuthInternalServerName}:${this._environmentConfig.Port}`;
+  }
+
   logoutUrl(): string {
     return `http://${this.serverName()}/oauth2/logout?client_id=${
       this._environmentConfig.ClientId
@@ -36,7 +40,7 @@ class OAuthRoutesConfiguration implements IOAuthRoutesConfiguration {
   }
 
   tokenRoute(): string {
-    return `http://${this.serverName()}/oauth2/token`;
+    return `http://${this.internalServerName()}/oauth2/token`;
   }
 }
 

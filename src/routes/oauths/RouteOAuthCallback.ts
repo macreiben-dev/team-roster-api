@@ -8,6 +8,9 @@ import {
 import HttpStatusCodes from "../../repositories/HttpStatusCodeConfiguration";
 import createTokenRequestData from "./CreateTokenRequest";
 import { IEnvironmentConfiguration } from "../../repositories/IEnvironmentConfiguration";
+import { v7 as createUid } from "uuid";
+
+const logContext = { route: "oauth-callback" };
 
 const config = {
   headers: {
@@ -16,14 +19,25 @@ const config = {
 };
 
 const handler = (request: Request, response: Response) => {
-  console.info("retrieving token ...");
+  const currentLogContext = {
+    ...logContext,
+    correlationId: createUid(),
+    originalUrl: request.originalUrl,
+  };
+
+  console.info("retrieving token ...", currentLogContext);
 
   const stateFromServer = readQueryState(request);
 
   const currentSessionStateValue = readSessionState(request);
 
   if (stateFromServer !== currentSessionStateValue) {
-    redirectAndWarn(stateFromServer, currentSessionStateValue, response);
+    redirectAndWarn(
+      stateFromServer,
+      currentSessionStateValue,
+      response,
+      logContext
+    );
     return;
   }
 
@@ -31,8 +45,19 @@ const handler = (request: Request, response: Response) => {
 
   const tokenRetrievalContext = createTokenRetrievalContext(
     environment,
-    request.query.code as string
+    request.query.code as string,
+    logContext
   );
+
+  const logTokenRetrievalContext = {
+    ...currentLogContext,
+    url: tokenRetrievalContext.url,
+    client_id: tokenRetrievalContext.data.client_id,
+    redirect_uri: tokenRetrievalContext.data.redirect_uri,
+    config,
+  };
+
+  console.info("queyring token", logTokenRetrievalContext);
 
   axios
     .post(
@@ -43,12 +68,23 @@ const handler = (request: Request, response: Response) => {
     .then((result) => {
       const session = request.session as IRequestSession;
 
+      const currentToken = result.data.access_token;
+
       // save token to session
       session.token = result.data.access_token;
 
-      console.info("token retrieved successfully, redirecting to [vueApp] -", {
+      session.token = currentToken;
+
+      const logContextRetrieval = {
+        ...logTokenRetrievalContext,
+        token: result.data.access_token,
         vueApp: environment.FrontAppRootUrl,
-      });
+      };
+
+      console.info(
+        "token retrieved successfully, redirecting to application",
+        logContextRetrieval
+      );
 
       //redirect to Vue app ==============================
 
@@ -56,20 +92,20 @@ const handler = (request: Request, response: Response) => {
        * idea: the token should be returned to the vue app
        * and the vue app should store it somewhere.
        */
+      response.cookie("app.at", currentToken);
       response.redirect(environment.FrontAppRootUrl);
 
       // =================================================
     })
     .catch((err) => {
-      console.error("====================================");
-      console.error("error retrieving token");
-      console.error(err);
+      console.error("error retrieving token", err, logTokenRetrievalContext);
     });
 };
 
 function createTokenRetrievalContext(
   envConfiguration: IEnvironmentConfiguration,
-  requestQueryCode: string
+  requestQueryCode: string,
+  logContext: Record<string, any>
 ) {
   const data = createTokenRequestData(envConfiguration, requestQueryCode);
 
@@ -77,7 +113,11 @@ function createTokenRetrievalContext(
 
   const context = { url, data, config };
 
-  console.info("token retrieval context [url], [data], [config]", context);
+  console.info("token retrieval context created", {
+    ...logContext,
+    url,
+    client_id: data.client_id,
+  });
 
   return context;
 }
@@ -102,10 +142,19 @@ const readSessionState = (request: Request): string => {
 const redirectAndWarn = (
   stateFromServer: string,
   sessionStateValue: string,
-  response: Response<any, Record<string, any>>
+  response: Response<any, Record<string, any>>,
+  logContext: Record<string, any>
 ) => {
-  console.warn("State doesn't match. uh-oh.");
-  console.warn(`Saw: ${stateFromServer}, but expected: ${sessionStateValue}`);
+  const message = `State doesn't match. uh-oh. Saw: ${stateFromServer}, but expected: ${sessionStateValue}`;
+
+  const currentLogContext = {
+    ...logContext,
+    message: message,
+    stateFromServer: stateFromServer,
+    sessionStateValue: sessionStateValue,
+  };
+
+  console.warn(message, currentLogContext);
   response.redirect(HttpStatusCodes.TEMPORARY_REDIRECT, "/");
 };
 
