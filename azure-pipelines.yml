@@ -15,6 +15,15 @@ stages:
 - stage: Build
   displayName: Build image
   jobs:
+  - job: CI
+    displayName: Build and run tests
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSource: 'spec'
+          versionSpec: '20.x'
   - job: Build
     displayName: Build
     pool:
