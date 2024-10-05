@@ -37,7 +37,7 @@ stages:
           script: 'npm run build:prod'
 
       - task: CmdLine@2
-        displayName: Package build
+        displayName: Run unit tests
         inputs:
           workingDirectory: src
           script: 'npm run test'
