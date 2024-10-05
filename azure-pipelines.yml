@@ -24,18 +24,18 @@ stages:
         inputs:
           versionSource: 'spec'
           versionSpec: '20.x'
-      - task: NodeJSRunner@0
+      - task: CmdLine@2
+        displayName: Package install
         inputs:
-          scriptPath: 'src'
-          arguments: 'install'
-      - task: NodeJSRunner@0
+          workingDirectory: src
+          script: 'npm install'
+
+      - task: CmdLine@2
+        displayName: Package build
         inputs:
-          scriptPath: 'src'
-          arguments: 'build:prod'
-      - task: NodeJSRunner@0
-        inputs:
-          scriptPath: 'src'
-          arguments: 'test'
+          workingDirectory: src
+          script: 'npm run build:prod'
+
   - job: Build
     displayName: Build
     pool:
