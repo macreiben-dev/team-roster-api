@@ -36,6 +36,12 @@ stages:
           workingDirectory: src
           script: 'npm run build:prod'
 
+      - task: CmdLine@2
+        displayName: Package build
+        inputs:
+          workingDirectory: src
+          script: 'npm run test'
+
   - job: Build
     displayName: Build
     pool:
