@@ -12,7 +12,7 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-- stage: Build
+- stage: BuildArtifact
   displayName: Build image
   jobs:
   - job: CI
@@ -42,15 +42,25 @@ stages:
           workingDirectory: src
           script: 'npm run test'
 
-  - job: Build
-    displayName: Build
+  - job: Deliver
+    displayName: Deliver on server
+    dependsOn: CI
     pool:
       vmImage: ubuntu-latest
     steps:
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/src/Dockerfile'
-        tags: |
-          $(tag)
+      - task: CopyFilesOverSSH@0
+        displayName: "copy source to deploy directory"
+        inputs:
+          cleanTargetFolder: true
+          sshEndpoint: ssh-team-roster
+          contents: "./src/**"
+          targetFolder: "~/deploy"
+          readyTimeout: "20000"
+      - task: SSH@0
+        displayName: "create docker image"
+        inputs:
+          sshEndpoint: ssh-team-roster
+          runOptions: "inline"
+          inline: |
+            cd ~/deploy/src
+            docker build . -t "team-roster-api"
