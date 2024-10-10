@@ -63,4 +63,4 @@ stages:
           runOptions: "inline"
           inline: |
             cd ~/deploy/src
-            docker build . -t "team-roster-api"
+            sudo docker build . -t "team-roster-api"
