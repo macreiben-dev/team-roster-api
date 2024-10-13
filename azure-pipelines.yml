@@ -9,7 +9,16 @@ resources:
   - repo: self
 
 variables:
-  tag: "$(Build.BuildId)"
+  - name: tag
+    value: "$(Build.BuildId)"
+  - name: sourceFolder
+    value: "src"
+  - name: distFolder
+    value: "dist"
+  - name: deployDirectory
+    value: "/home/team-roster-deploy/deploy_back"
+  - name: currentSshEndpoint
+    value: "ssh-team-roster"
 
 stages:
   - stage: BuildArtifact
@@ -28,20 +37,20 @@ stages:
           - task: CmdLine@2
             displayName: Package install
             inputs:
-              workingDirectory: src
               script: "npm install"
+              workingDirectory: $(sourceFolder)
 
           - task: CmdLine@2
             displayName: Package build
             inputs:
-              workingDirectory: src
               script: "npm run build:prod"
+              workingDirectory: $(sourceFolder)
 
           - task: CmdLine@2
             displayName: Run unit tests
             inputs:
-              workingDirectory: src
               script: "npm run test"
+              workingDirectory: $(sourceFolder)
 
       - job: Deliver
         displayName: Deliver on server
@@ -53,15 +62,15 @@ stages:
             displayName: "copy source to deploy directory"
             inputs:
               cleanTargetFolder: true
-              sshEndpoint: ssh-team-roster
-              contents: "./src/**"
-              targetFolder: "~/deploy"
+              sshEndpoint: $(currentSshEndpoint)
+              contents: "./$(sourceFolder)/$(distFolder)/**"
+              targetFolder: $(deployDirectory)
               readyTimeout: "20000"
           - task: SSH@0
             displayName: "create docker image"
             inputs:
-              sshEndpoint: ssh-team-roster
+              sshEndpoint: $(currentSshEndpoint)
               runOptions: "inline"
               inline: |
-                cd ~/deploy/src
+                cd $(deployDirectory)/$(sourceFolder)
                 sudo docker build --no-cache . -t "team-roster-api" 2>&1
