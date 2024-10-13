@@ -3,64 +3,64 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+  - main
 
 resources:
-- repo: self
+  - repo: self
 
 variables:
-  tag: '$(Build.BuildId)'
+  tag: "$(Build.BuildId)"
 
 stages:
-- stage: BuildArtifact
-  displayName: Build image
-  jobs:
-  - job: CI
-    displayName: Build and run tests
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      - task: NodeTool@0
-        inputs:
-          versionSource: 'spec'
-          versionSpec: '20.x'
-      - task: CmdLine@2
-        displayName: Package install
-        inputs:
-          workingDirectory: src
-          script: 'npm install'
+  - stage: BuildArtifact
+    displayName: Build image
+    jobs:
+      - job: CI
+        displayName: Build and run tests
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSource: "spec"
+              versionSpec: "20.x"
+          - task: CmdLine@2
+            displayName: Package install
+            inputs:
+              workingDirectory: src
+              script: "npm install"
 
-      - task: CmdLine@2
-        displayName: Package build
-        inputs:
-          workingDirectory: src
-          script: 'npm run build:prod'
+          - task: CmdLine@2
+            displayName: Package build
+            inputs:
+              workingDirectory: src
+              script: "npm run build:prod"
 
-      - task: CmdLine@2
-        displayName: Run unit tests
-        inputs:
-          workingDirectory: src
-          script: 'npm run test'
+          - task: CmdLine@2
+            displayName: Run unit tests
+            inputs:
+              workingDirectory: src
+              script: "npm run test"
 
-  - job: Deliver
-    displayName: Deliver on server
-    dependsOn: CI
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      - task: CopyFilesOverSSH@0
-        displayName: "copy source to deploy directory"
-        inputs:
-          cleanTargetFolder: true
-          sshEndpoint: ssh-team-roster
-          contents: "./src/**"
-          targetFolder: "~/deploy"
-          readyTimeout: "20000"
-      - task: SSH@0
-        displayName: "create docker image"
-        inputs:
-          sshEndpoint: ssh-team-roster
-          runOptions: "inline"
-          inline: |
-            cd ~/deploy/src
-            sudo docker build . -t "team-roster-api" 2>&1
+      - job: Deliver
+        displayName: Deliver on server
+        dependsOn: CI
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: CopyFilesOverSSH@0
+            displayName: "copy source to deploy directory"
+            inputs:
+              cleanTargetFolder: true
+              sshEndpoint: ssh-team-roster
+              contents: "./src/**"
+              targetFolder: "~/deploy"
+              readyTimeout: "20000"
+          - task: SSH@0
+            displayName: "create docker image"
+            inputs:
+              sshEndpoint: ssh-team-roster
+              runOptions: "inline"
+              inline: |
+                cd ~/deploy/src
+                sudo docker build --no-cache . -t "team-roster-api" 2>&1

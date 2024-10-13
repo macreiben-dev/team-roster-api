@@ -40,11 +40,11 @@ const handler = async (request: Request, response: Response) => {
 
     const user = new ConnectedUser(userApiResponse.data);
 
-    console.info(
-      "connected user created [user]",
-      user.toJson(),
-      userApiResponse
-    );
+    console.info("connected user created", {
+      user: user.toJson(),
+      apiResponseStats: userApiResponse,
+      apiResponseHEader: userApiResponse.headers,
+    });
 
     response.status(200).send(user.toJson());
   } catch (error) {

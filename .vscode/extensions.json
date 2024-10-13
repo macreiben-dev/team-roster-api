@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "akamud.vscode-theme-onedark",
+    "esbenp.prettier-vscode",
+    "vitest.explorer",
+    "vue.volar",
+    "rangav.vscode-thunder-client",
+    "bradlc.vscode-tailwindcss"
+  ]
+}
