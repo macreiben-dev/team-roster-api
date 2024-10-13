@@ -53,24 +53,45 @@ stages:
               workingDirectory: $(sourceFolder)
 
       - job: Deliver
-        displayName: Deliver on server
+        displayName: Deliver
         dependsOn: CI
         pool:
           vmImage: ubuntu-latest
         steps:
+          - script: |
+              npm install
+            displayName: "npm install"
+            workingDirectory: $(sourceFolder)
+
+          - script: |
+              npm run build:prod
+            displayName: "npm build"
+            workingDirectory: $(sourceFolder)
+
           - task: CopyFilesOverSSH@0
-            displayName: "copy source to deploy directory"
+            displayName: "Copy dist to remote server"
             inputs:
               cleanTargetFolder: true
               sshEndpoint: $(currentSshEndpoint)
-              contents: "./$(sourceFolder)/$(distFolder)/**"
+              contents: "$(sourceFolder)/$(distFolder)/**"
               targetFolder: $(deployDirectory)
               readyTimeout: "20000"
+              delayBetweenUploads: "5"
+
+          - task: CopyFilesOverSSH@0
+            displayName: "Copy dockerfile to remote server"
+            inputs:
+              cleanTargetFolder: false
+              sshEndpoint: $(currentSshEndpoint)
+              contents: "$(sourceFolder)/Docker*"
+              targetFolder: $(deployDirectory)
+              readyTimeout: "20000"
+              delayBetweenUploads: "5"
+
           - task: SSH@0
             displayName: "create docker image"
             inputs:
               sshEndpoint: $(currentSshEndpoint)
               runOptions: "inline"
               inline: |
-                cd $(deployDirectory)/$(sourceFolder)
-                sudo docker build --no-cache . -t "team-roster-api" 2>&1
+                sudo docker build --no-cache $(deployDirectory)/$(sourceFolder) -t "team-roster-front" 2>&1
