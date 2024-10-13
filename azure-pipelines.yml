@@ -24,6 +24,7 @@ stages:
             inputs:
               versionSource: "spec"
               versionSpec: "20.x"
+
           - task: CmdLine@2
             displayName: Package install
             inputs:
