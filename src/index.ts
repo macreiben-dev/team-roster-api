@@ -58,7 +58,7 @@ const runtimeLogger = logger.getChildCategory("runtime");
 
 app
   .listen(PORT, () => {
-    runtimeLogger.info("Server running at PORT: ", PORT);
+    runtimeLogger.info("Server running at port {port}", PORT);
   })
   .on("error", (error: any) => {
     runtimeLogger.error("Error occured on server {error}", error);
