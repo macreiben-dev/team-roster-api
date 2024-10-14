@@ -3720,6 +3720,11 @@ type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
+typescript-logging-category-style@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/typescript-logging-category-style/-/typescript-logging-category-style-2.2.0.tgz#7cc56ceaed364666f537ca8d92364c589bedba07"
+  integrity sha512-eZ33wSIS7qkgmomMlciEuniWVCg04/anU4RKdc5q62nFfBYBXKocKbksYoDGBZtg/wKs8syXEdceWnAx7Xhr/A==
+
 typescript-logging@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/typescript-logging/-/typescript-logging-2.2.0.tgz#0200fbc99ec5aca2d01bd00a7941bbd1c8bd568b"
