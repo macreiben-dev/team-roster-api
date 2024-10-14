@@ -54,12 +54,14 @@ app.use(express.json());
 
 middleWareLogger.info("express middleware set");
 
+const runtimeLogger = logger.getChildCategory("runtime");
+
 app
   .listen(PORT, () => {
-    logger.info("Server running at PORT: ", PORT);
+    runtimeLogger.info("Server running at PORT: ", PORT);
   })
   .on("error", (error: any) => {
-    logger.error("Error occured on server {error}", error);
+    runtimeLogger.error("Error occured on server {error}", error);
     // gracefully handle error
     throw new Error(error.message);
   });
