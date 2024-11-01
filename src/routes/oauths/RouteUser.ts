@@ -9,8 +9,10 @@ import { readToken } from "../../lib/tokenUtil";
 import IOAuthRoutesConfiguration from "../../repositories/IOAuthRoutesConfiguration";
 import { ConnectedUser } from "../../models/authentications/ConnectedUser";
 import { IEnvironmentConfiguration } from "../../repositories/IEnvironmentConfiguration";
+import { getLogger } from "../../logging/loggerFactory";
+import { Category } from "typescript-logging-category-style";
 
-const logContext = { middleware: "routeUser" };
+const logger = getLogger("routeUser");
 
 const handler = async (request: Request, response: Response) => {
   const config = createOAuthConfiguration();
@@ -19,13 +21,12 @@ const handler = async (request: Request, response: Response) => {
   const currentToken = readToken(request);
 
   const currentLogContext = {
-    ...logContext,
     originalUrl: request.originalUrl,
     currentToken,
   };
 
   if (!currentToken) {
-    console.info("No token found", currentLogContext);
+    notifyNoTokenFound(currentLogContext);
     send401(response);
   }
 
@@ -57,6 +58,17 @@ const handler = async (request: Request, response: Response) => {
   }
 };
 
+function notifyNoTokenFound(currentLogContext: {
+  originalUrl: string;
+  currentToken: any;
+}) {
+  logger.info(
+    "No token found {originalUrl}, {currentToken}",
+    currentLogContext.originalUrl,
+    currentLogContext.currentToken
+  );
+}
+
 async function readUserFromApi(
   envConfig: IEnvironmentConfiguration,
   config: IOAuthRoutesConfiguration,
@@ -65,7 +77,6 @@ async function readUserFromApi(
   const apiUserRoute = config.apiUserRoute(userId);
 
   const apiCallLogContext = {
-    ...logContext,
     function: "readUserFromApi",
     tenantId: envConfig.tenantId,
     apiUserRoute: apiUserRoute,
@@ -95,37 +106,67 @@ async function readUserIdFromIntroSpec(
   config: IOAuthRoutesConfiguration,
   currentToken: string
 ) {
+  const loggerReadUserIdFromIntroSpec = logger.getChildCategory(
+    "readUserIdFromIntroSpec"
+  );
+
   const configIntrospecRoute = {
     client_id: envConfig.ClientId,
     token: currentToken,
   };
 
   const currentLogContext = {
-    ...logContext,
-    function: "getUserIdFromIntroSpec",
     introspecRoute: config.introspecRoute(),
     configIntrospecRoute,
   };
 
   try {
+    notifyStartReadingIntrospecConfiguration(
+      loggerReadUserIdFromIntroSpec,
+      currentLogContext
+    );
+
     const instropecResponse = await axios.post(
       config.introspecRoute(),
       qs.stringify(configIntrospecRoute)
     );
 
     if (!instropecResponse) {
+      notifyErrorIntrospecResponseNull(
+        loggerReadUserIdFromIntroSpec,
+        currentLogContext
+      );
       throw new IntrospecResponseNullError();
     }
 
     const sub = instropecResponse.data.sub;
 
-    console.info(`introspection response received ${sub}`, currentLogContext);
+    notifyIntrospecResponseReceived(
+      loggerReadUserIdFromIntroSpec,
+      sub,
+      config,
+      configIntrospecRoute
+    );
 
     return sub;
   } catch (error) {
-    console.error("Error introspecting token", error, currentLogContext);
+    logger.error("Error introspecting token", error, currentLogContext);
     throw error;
   }
+}
+
+function notifyIntrospecResponseReceived(
+  loggerReadUserIdFromIntroSpec: Category,
+  sub: any,
+  config: IOAuthRoutesConfiguration,
+  configIntrospecRoute: { client_id: string; token: string }
+) {
+  loggerReadUserIdFromIntroSpec.info(
+    `introspection response received {sub}, {introspecRoute}, {configIntrospecRoute}`,
+    sub,
+    config.introspecRoute(),
+    configIntrospecRoute
+  );
 }
 
 function send401(response: Response<any, Record<string, any>>) {
@@ -134,6 +175,36 @@ function send401(response: Response<any, Record<string, any>>) {
 
 function send500(response: Response<any, Record<string, any>>, error: any) {
   response.status(500).send(error.message);
+}
+
+function notifyStartReadingIntrospecConfiguration(
+  loggerReadUserIdFromIntroSpec: Category,
+  currentLogContext: {
+    introspecRoute: string;
+    configIntrospecRoute: { client_id: string; token: string };
+  }
+) {
+  loggerReadUserIdFromIntroSpec.info(
+    "Retrieving introspection response {introspecRoute}, {client_id}, {token} ...",
+    currentLogContext.introspecRoute,
+    currentLogContext.configIntrospecRoute.client_id,
+    currentLogContext.configIntrospecRoute.token
+  );
+}
+
+function notifyErrorIntrospecResponseNull(
+  loggerReadUserIdFromIntroSpec: Category,
+  currentLogContext: {
+    introspecRoute: string;
+    configIntrospecRoute: { client_id: string; token: string };
+  }
+) {
+  loggerReadUserIdFromIntroSpec.error(
+    "Introspec response is null {introspecRoute}, {client_id}, {token}",
+    currentLogContext.introspecRoute,
+    currentLogContext.configIntrospecRoute.client_id,
+    currentLogContext.configIntrospecRoute.token
+  );
 }
 
 class IntrospecResponseNullError extends Error {

@@ -1,6 +1,9 @@
 import { Router } from "express";
 import configureUserRoutes from "./routes/ConfigureUserRoutes";
 import configureSystemRoute from "./routes/configureSystemRoute";
+import { getLogger } from "./logging/loggerFactory";
+
+const logger = getLogger("routes");
 
 const router = Router();
 
@@ -9,7 +12,7 @@ const configureRoute = (router: Router): Router => {
 
   configureSystemRoute(router);
 
-  console.info("Routes configured");
+  logger.info("Routes configured");
 
   return router;
 };
@@ -17,8 +20,14 @@ const configureRoute = (router: Router): Router => {
 configureRoute(router);
 
 router.stack.forEach((r: any) => {
+  const loggerRouteConfiguration =
+    logger.getChildCategory("routeConfiguration");
+
   if (r.route && r.route.path) {
-    console.info(`Route ${r.route.path} is up and running`);
+    loggerRouteConfiguration.info(
+      `Route {route} is up and running`,
+      r.route.path
+    );
   }
 });
 

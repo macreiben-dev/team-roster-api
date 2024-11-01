@@ -3,15 +3,29 @@ import dotenv from "dotenv";
 import configureRoute from "./routes";
 import session from "express-session";
 import verifyJWT from "./middlewares/verifyJWT";
+import { getLogger } from "./logging/loggerFactory";
+
+const logger = getLogger("index");
+
+logger.info("Starting server ...");
 
 const cors = require("cors");
 
 dotenv.config();
 
+logger.info("dotenv loaded");
+
 const app = express();
+
+logger.info("express app created");
+
 app.use(cors());
 
 const PORT = process.env.SERVER_PORT;
+
+logger.info("port set to ", PORT);
+
+const middleWareLogger = logger.getChildCategory("middleware");
 
 app.use(
   session({
@@ -26,17 +40,28 @@ app.use(
   })
 );
 
+middleWareLogger.info("session middleware set");
+
 app.use(verifyJWT);
+
+middleWareLogger.info("verifyJWT middleware set");
 
 app.use("/", configureRoute);
 
+middleWareLogger.info("configureRoute middleware set");
+
 app.use(express.json());
+
+middleWareLogger.info("express middleware set");
+
+const runtimeLogger = logger.getChildCategory("runtime");
 
 app
   .listen(PORT, () => {
-    console.info("Server running at PORT: ", PORT);
+    runtimeLogger.info("Server running at port {port}", PORT);
   })
   .on("error", (error: any) => {
+    runtimeLogger.error("Error occured on server {error}", error);
     // gracefully handle error
     throw new Error(error.message);
   });
